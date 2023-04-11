@@ -29,8 +29,8 @@ class Knight_Tour {
 
     //Make sure current movement is valid
     boolean isvalid(int board[], int x, int y) {
-//        //The next cell is in limits
-//        //the next cell is empty (marked with -1) 
+        //The next cell is in limits
+        //the next cell is empty (marked with -1) 
         boolean degree = (limits(x, y)) && (board[y * N + x] < 0);
         return degree;
     }
