@@ -30,17 +30,12 @@ class Knight_Tour {
     //Make sure current movement is valid
     boolean isvalid(int board[], int x, int y) {
 //        //The next cell is in limits
-//        boolean inlimit = limits(x, y);
-//        //the next cell is empty (not marked with 1) //######not sure what this line do!
-//        boolean empty = board[y * N + x] < 0;
-//        return (inlimit && empty);
-
+//        //the next cell is empty (marked with -1) 
         boolean degree = (limits(x, y)) && (board[y * N + x] < 0);
         return degree;
     }
 
     //return number of adjacent empty squares
-    //####We can adjust it to return those empty squares!
     int getDegree(int board[], int x, int y) {
         int count = 0;
         for (int i = 0; i < N; ++i)
@@ -67,7 +62,7 @@ class Knight_Tour {
         // Try all adjacents of (*x, *y) and choose the one with minimum degree.
         int start = ThreadLocalRandom.current().nextInt(1000) % N;
         for (int count = 0; count < N; ++count) {
-            //####Don't get it!!!
+            //To make sure that it is within the range of the board 
             int i = (start + count) % N;
 
             //start from a random possible neighbour
@@ -94,7 +89,6 @@ class Knight_Tour {
         possibleY = square.y + moveY[min_idx];
 
         // Mark this square as visited!
-        //####Don't get the logic###### I think it has something to do with the board being 1D
         board[possibleY * N + possibleX] = board[(square.y) * N + (square.x)] + 1;
         // Actually visiting the point
         square.x = possibleX;
@@ -102,5 +96,71 @@ class Knight_Tour {
 
         return square;
     }
+    //Check if the tour is closed or not yet by checking if current position is one knight's position from the start
+    boolean neighbour(int x1, int y1, int x2, int y2) {
+        for (int i = 0; i < N; ++i)
+            if (((x1 + moveX[i]) == x2) &&
+                    ((y1 + moveY[i]) == y2))
+                return true;
 
+        return false;
+    }
 
+    //Generates all possible moves using warnsdorff's heuristic until visiting all cells
+    boolean findPossibleMoves(){
+        //To begin, mark all the cells as unvisited by filling them all with -1
+        int board[] = new int [N * N];
+        for(int i = 0; i < N * N; ++i){
+            board[i] = -1;
+        }
+        //Set initial positions of x and y  (start from random position)
+        int sx = (int) (Math.random() * 8) ;
+        int sy = (int) (Math.random() * 8) ;
+
+        //Set the current position as same as the initial position
+        Square sqaure = new Square(sx,sy);
+
+        //Mark the first move
+        board[sqaure.y * N + sqaure.x] = 1;
+
+        //Keep tracking next points using warnsdorff's heuristic
+        Square sq = null;
+        for (int i = 0; i < N * N - 1; ++i){
+            //Check if the next square is empty
+            sq = nextMove(board,sqaure);
+            if(sq == null)
+                return false;
+        }
+
+        //Check if the knight's tour is closed, and it ends at the starting point
+        if(!neighbour(sq.x, sq.y, sx, sy))
+            return false;
+        print(board);
+        return true;
+
+    }
+    //Print Board and Count the number of movements
+    void print(int board[])
+    {
+        int count=0;
+        for (int i = 0; i < N; ++i)
+        {
+            for (int j = 0; j < N; ++j){
+                System.out.printf("%d\t", board[j * N + i]); count++;
+            }
+            System.out.printf("\n");
+
+        }
+        //Print the count after printing the board
+        System.out.printf("minimum number of moves is: %d ",count);
+    }
+    
+    public static void main(String[] args){
+        //While we can't find possible solution
+        while(!new Knight_Tour().findPossibleMoves()){
+
+        }
+
+    }
+}
+    
