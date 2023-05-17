@@ -1,8 +1,9 @@
 import java.util.Arrays;
+import java.util.Scanner;
 /*user can change the values of n,NORMAL_SIZE,HEAVY_COIN and LIGHT_COIN in the class Fake_coin_problem
-**user can change the values of fake_coin_index and fake_coin_weight also in the main function
-**changing those values will set the problem dynamically
-*/
+ **user can change the values of fake_coin_index and fake_coin_weight also in the main function
+ **changing those values will set the problem dynamically
+ */
 public class Fake_coin_problem {
     /*defining standard weights of coins we can change it or put any weights we want*/
     static int NORMAL_SIZE = 10;
@@ -11,7 +12,7 @@ public class Fake_coin_problem {
     /*defining the number of coins dynamically to determine the fake coin*/
     static int n = 12;
     /*define dynamic array of coins weights with dynamic size n*/
-    static int[] coins = new int[n];
+    static int[] coins;
     /*define memory variables used to solve the problem using divide and conquer (dynamic programming technique)*/
     /*memory variable used by getFakeIndex function to store the weight of not fake coin if the weight is known by function automatically*/
     static int normalValue = -1;
@@ -72,7 +73,17 @@ public class Fake_coin_problem {
                         fakeIndex = secondIndex;
                     }
                 } else if (normalValue == -1) {
-                    /*cant predict*/
+                    /*cant predict so we assume third one exists*/
+                    int thirdIndex = secondIndex+1;
+                    if(balance(coins[firstIndex], coins[secondIndex]) == 0){
+                        normalValue = coins[firstIndex];
+                    }else if(balance(coins[firstIndex], coins[thirdIndex]) == 0){
+                        normalValue = coins[firstIndex];
+                        fakeIndex = secondIndex;
+                    }else if(balance(coins[secondIndex], coins[thirdIndex]) == 0){
+                        normalValue = secondIndex;
+                        fakeIndex = firstIndex;
+                    }
                 }
             } else {//divide problem
                 int midIndex = (startIndex + endIndex) / 2;
@@ -82,12 +93,27 @@ public class Fake_coin_problem {
         }/*if the fake coin found end the function*/
     }
     public static void main(String[] args) {
+        /*get the necessary inputs from user*/
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of coins: ");
+        int user_input_num_of_coins = scanner.nextInt();
+        System.out.print("Enter the index of the fake coin: ");
+        int user_input_Index_of_fake = scanner.nextInt();
+        System.out.print("Enter the weight of normal coin: ");
+        int user_input_Weight_of_normal_coin = scanner.nextInt();
+        System.out.print("Enter the weight of fake coin: ");
+        int user_input_Weight_of_fake_coin = scanner.nextInt();
+
+        /*initialize program variables with the values from user*/
+        n = user_input_num_of_coins;
+        int fake_coin_index = user_input_Index_of_fake;
+        int normal_coin_weight = user_input_Weight_of_normal_coin;
+        int fake_coin_weight = user_input_Weight_of_fake_coin;
+        /*calculating the size of the dynamic array of weight of coins from the input of user*/
+        coins = new int[n];
         //fill the dynamic array with the values of normal_coin_weight variable to fill it with non-fake coins
-        int normal_coin_weight = NORMAL_SIZE;
         Arrays.fill(coins,normal_coin_weight);
         /*choose the index of fake coin and the weight of it */
-        int fake_coin_index = 4;
-        int fake_coin_weight = LIGHT_COIN;
         coins[fake_coin_index] = fake_coin_weight;
         /*getting the fake coin*/
         getFakeIndex(0,coins.length-1);
@@ -106,10 +132,8 @@ public class Fake_coin_problem {
                 System.out.print(fake_coin_index+1);
                 System.out.println("th coin");
             }
-            
             System.out.print("the fake coin has index of ");
             System.out.println(fakeIndex);
         }
-
     }
 }
